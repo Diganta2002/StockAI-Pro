@@ -2844,7 +2844,7 @@ body {
   border-bottom: 1px solid var(--border);
   position: sticky;
   top: 0;
-  z-index: 100;
+  z-index: 1000;
   padding: 12px 24px;
   width: 100%;
 }
@@ -2856,6 +2856,8 @@ body {
   align-items: center;
   flex-wrap: wrap;
   gap: 12px;
+  height: auto;
+  min-height: 68px;
 }
 .top-navbar .nav-links {
   display: flex;
