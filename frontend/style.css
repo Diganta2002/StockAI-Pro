@@ -2262,9 +2262,41 @@ body {
 }
 
 .modal-close:hover {
-  background: rgba(239, 68, 68, 0.1);
-  color: var(--negative);
-  border-color: rgba(239, 68, 68, 0.3);
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+}
+
+.modal-tabs {
+  scrollbar-width: none;
+}
+.modal-tabs::-webkit-scrollbar {
+  display: none;
+}
+.modal-tab {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-weight: 600;
+  padding: 8px 4px;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  font-size: 0.9rem;
+}
+.modal-tab:hover {
+  color: var(--text-primary);
+}
+.modal-tab.active {
+  color: var(--accent-green);
+  border-bottom-color: var(--accent-green);
+}
+.profile-tab-content {
+  display: none;
+  animation: fadeIn 0.3s ease;
+}
+.profile-tab-content.active {
+  display: flex;
 }
 
 .modal-metrics {

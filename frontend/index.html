@@ -680,21 +680,181 @@
 
   <!-- ===== PROFILE MODAL ===== -->
   <div class="modal-overlay" id="profileModal" onclick="closeProfileModal()">
-    <div class="modal-card" onclick="event.stopPropagation()" style="max-width: 400px;">
-      <div class="modal-header">
-        <h2>Edit Profile</h2>
+    <div class="modal-card" onclick="event.stopPropagation()" style="max-width: 600px; padding: 1.5rem 2rem;">
+      <div class="modal-header" style="padding-bottom: 10px; border-bottom: none; margin-bottom: 0;">
+        <h2>Trader Profile & Settings</h2>
         <button class="modal-close" onclick="closeProfileModal()">&#x2715;</button>
       </div>
-      <div style="display: flex; flex-direction: column; gap: 1rem; margin-top: 1rem;">
-        <div class="filter-group">
-          <label for="profileNameInput">Display Name</label>
-          <input type="text" id="profileNameInput" class="filter-select" style="width: 100%; -webkit-appearance: none; appearance: none; background-image: none;" placeholder="Enter your name" />
+      
+      <div class="modal-tabs" style="display: flex; gap: 1.5rem; border-bottom: 1px solid var(--border); margin-bottom: 1.5rem; margin-top: 10px;">
+        <button class="modal-tab active" id="ptab-btn-personal" onclick="switchProfileTab('personal')">Personal Info</button>
+        <button class="modal-tab" id="ptab-btn-kyc" onclick="switchProfileTab('kyc')">KYC & Documents</button>
+        <button class="modal-tab" id="ptab-btn-bank" onclick="switchProfileTab('bank')">Bank & Trading</button>
+      </div>
+
+      <div style="max-height: 60vh; overflow-y: auto; padding-right: 5px;">
+        
+        <!-- Tab 1: Personal Info -->
+        <div id="ptab-personal" class="profile-tab-content active" style="display: flex; flex-direction: column; gap: 1.5rem;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="filter-group">
+              <label for="profileNameInput">Full Name</label>
+              <input type="text" id="profileNameInput" class="filter-select" style="width: 100%; -webkit-appearance: none; appearance: none; background-image: none;" placeholder="As per PAN card" />
+            </div>
+            <div class="filter-group">
+              <label for="profileEmailInput">Email Address</label>
+              <input type="email" id="profileEmailInput" class="filter-select" style="width: 100%; -webkit-appearance: none; appearance: none; background-image: none;" placeholder="name@example.com" />
+            </div>
+            <div class="filter-group">
+              <label for="profilePhoneInput">Phone Number</label>
+              <input type="tel" id="profilePhoneInput" class="filter-select" style="width: 100%; -webkit-appearance: none; appearance: none; background-image: none;" placeholder="+91" />
+            </div>
+            <div class="filter-group">
+              <label for="profileDobInput">Date of Birth</label>
+              <input type="date" id="profileDobInput" class="filter-select" style="width: 100%; -webkit-appearance: none; appearance: none; background-image: none; color-scheme: dark;" />
+            </div>
+          </div>
+          <div class="filter-group">
+            <label for="profileAddressInput">Residential Address</label>
+            <textarea id="profileAddressInput" class="filter-select" style="width: 100%; height: 60px; resize: none; background-image: none; padding: 10px;" placeholder="Full Address with PIN Code"></textarea>
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="filter-group">
+              <label for="profileOccupationInput">Occupation</label>
+              <select id="profileOccupationInput" class="filter-select" style="width: 100%;">
+                <option value="Private Sector">Private Sector</option>
+                <option value="Public Sector">Public Sector</option>
+                <option value="Business">Business</option>
+                <option value="Professional">Professional</option>
+                <option value="Student">Student</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label for="profileIncomeInput">Annual Income</label>
+              <select id="profileIncomeInput" class="filter-select" style="width: 100%;">
+                <option value="Below 1 Lakh">Below 1 Lakh</option>
+                <option value="1-5 Lakhs">1-5 Lakhs</option>
+                <option value="5-10 Lakhs">5-10 Lakhs</option>
+                <option value="10-25 Lakhs">10-25 Lakhs</option>
+                <option value="Above 25 Lakhs">Above 25 Lakhs</option>
+              </select>
+            </div>
+          </div>
         </div>
-        <div class="filter-group">
-          <label for="profileEmailInput">Email Address</label>
-          <input type="email" id="profileEmailInput" class="filter-select" style="width: 100%; -webkit-appearance: none; appearance: none; background-image: none;" placeholder="Enter your email" />
+
+        <!-- Tab 2: KYC & Documents -->
+        <div id="ptab-kyc" class="profile-tab-content" style="display: none; flex-direction: column; gap: 1.5rem;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="filter-group">
+              <label for="profilePanInput">PAN Number</label>
+              <input type="text" id="profilePanInput" class="filter-select" style="width: 100%; -webkit-appearance: none; appearance: none; background-image: none; text-transform: uppercase;" placeholder="ABCDE1234F" />
+            </div>
+            <div class="filter-group">
+              <label>KYC Status</label>
+              <div style="padding: 10px 14px; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: var(--radius-sm); color: var(--accent-green); font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 6px;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg> Verified
+              </div>
+            </div>
+          </div>
+          
+          <div>
+            <h4 style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 10px;">Document Uploads</h4>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+              <div class="filter-group">
+                <label>PAN Card (Front)</label>
+                <div class="upload-area" onclick="document.getElementById('panFrontUpload').click()">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                  <span>Upload Front</span>
+                  <input type="file" id="panFrontUpload" accept="image/*,.pdf" style="display: none;" onchange="updateUploadLabel(this)" />
+                </div>
+              </div>
+              <div class="filter-group">
+                <label>PAN Card (Back)</label>
+                <div class="upload-area" onclick="document.getElementById('panBackUpload').click()">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                  <span>Upload Back</span>
+                  <input type="file" id="panBackUpload" accept="image/*,.pdf" style="display: none;" onchange="updateUploadLabel(this)" />
+                </div>
+              </div>
+              <div class="filter-group">
+                <label>Aadhaar Card</label>
+                <div class="upload-area" onclick="document.getElementById('aadhaarUpload').click()">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                  <span>Upload Aadhaar</span>
+                  <input type="file" id="aadhaarUpload" accept="image/*,.pdf" style="display: none;" onchange="updateUploadLabel(this)" />
+                </div>
+              </div>
+              <div class="filter-group">
+                <label>Bank Passbook / Cheque</label>
+                <div class="upload-area" onclick="document.getElementById('passbookUpload').click()">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                  <span>Upload Passbook</span>
+                  <input type="file" id="passbookUpload" accept="image/*,.pdf" style="display: none;" onchange="updateUploadLabel(this)" />
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-        <button class="btn-primary" style="width: 100%; padding: 0.8rem; margin-top: 0.5rem;" onclick="saveProfile()">Save Profile</button>
+
+        <!-- Tab 3: Bank & Trading -->
+        <div id="ptab-bank" class="profile-tab-content" style="display: none; flex-direction: column; gap: 1.5rem;">
+          <div>
+            <h4 style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 10px;">Bank Account Details</h4>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+              <div class="filter-group">
+                <label for="profileBankInput">Account Number</label>
+                <input type="text" id="profileBankInput" class="filter-select" style="width: 100%; -webkit-appearance: none; appearance: none; background-image: none;" placeholder="XXXX XXXX XXXX" />
+              </div>
+              <div class="filter-group">
+                <label for="profileIfscInput">IFSC Code</label>
+                <input type="text" id="profileIfscInput" class="filter-select" style="width: 100%; -webkit-appearance: none; appearance: none; background-image: none; text-transform: uppercase;" placeholder="SBIN0001234" />
+              </div>
+            </div>
+          </div>
+          
+          <div>
+            <h4 style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 10px;">Trading & Demat Account</h4>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+              <div class="filter-group">
+                <label for="profileDematInput">BO ID / Demat A/C</label>
+                <input type="text" id="profileDematInput" class="filter-select" style="width: 100%; -webkit-appearance: none; appearance: none; background-image: none;" placeholder="16 Digit Number" />
+              </div>
+              <div class="filter-group">
+                <label for="profileSegmentsInput">Active Segments</label>
+                <select id="profileSegmentsInput" class="filter-select" style="width: 100%;">
+                  <option value="Equity & Mutual Funds">Equity & Mutual Funds</option>
+                  <option value="Equity, F&O">Equity, F&O</option>
+                  <option value="All Segments">All Segments (Eq, F&O, Cmdty, Curr)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <h4 style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 10px;">Nominee Details</h4>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+              <div class="filter-group">
+                <label for="profileNomineeInput">Nominee Name</label>
+                <input type="text" id="profileNomineeInput" class="filter-select" style="width: 100%; -webkit-appearance: none; appearance: none; background-image: none;" placeholder="Full Name" />
+              </div>
+              <div class="filter-group">
+                <label for="profileNomRelationInput">Relationship</label>
+                <select id="profileNomRelationInput" class="filter-select" style="width: 100%;">
+                  <option value="Spouse">Spouse</option>
+                  <option value="Parent">Parent</option>
+                  <option value="Child">Child</option>
+                  <option value="Sibling">Sibling</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      
+      <div style="margin-top: 1.5rem; border-top: 1px solid var(--border); padding-top: 1.5rem;">
+        <button class="btn-primary" style="width: 100%; padding: 0.9rem; font-size: 0.95rem;" onclick="saveProfile()">Save & Update Profile</button>
       </div>
     </div>
   </div>

@@ -1794,17 +1794,67 @@ function handleStockSearch(query) {
 // ================================================================
 // PROFILE MODAL
 // ================================================================
+function switchProfileTab(tabId) {
+  // Update buttons
+  document.querySelectorAll('.modal-tab').forEach(btn => btn.classList.remove('active'));
+  document.getElementById('ptab-btn-' + tabId).classList.add('active');
+  
+  // Update content
+  document.querySelectorAll('.profile-tab-content').forEach(content => {
+    content.classList.remove('active');
+    content.style.display = 'none';
+  });
+  const activeTab = document.getElementById('ptab-' + tabId);
+  activeTab.classList.add('active');
+  activeTab.style.display = 'flex';
+}
+
 function openProfileModal() {
   const userStr = localStorage.getItem('auth_user');
-  let user = { name: '', email: '' };
+  let user = { 
+    name: '', email: '', phone: '', dob: '', pan: '', bank: '', ifsc: '',
+    address: '', occupation: 'Private Sector', income: 'Below 1 Lakh',
+    demat: '', segments: 'Equity & Mutual Funds', nominee: '', nomRelation: 'Spouse'
+  };
   try {
-    user = JSON.parse(userStr || '{}');
+    user = Object.assign(user, JSON.parse(userStr || '{}'));
   } catch(e){}
 
   const nameInput = document.getElementById('profileNameInput');
   const emailInput = document.getElementById('profileEmailInput');
+  const phoneInput = document.getElementById('profilePhoneInput');
+  const dobInput = document.getElementById('profileDobInput');
+  const panInput = document.getElementById('profilePanInput');
+  const bankInput = document.getElementById('profileBankInput');
+  const ifscInput = document.getElementById('profileIfscInput');
+  
+  // New fields
+  const addrInput = document.getElementById('profileAddressInput');
+  const occInput = document.getElementById('profileOccupationInput');
+  const incInput = document.getElementById('profileIncomeInput');
+  const dematInput = document.getElementById('profileDematInput');
+  const segInput = document.getElementById('profileSegmentsInput');
+  const nomInput = document.getElementById('profileNomineeInput');
+  const nomRelInput = document.getElementById('profileNomRelationInput');
+  
   if (nameInput) nameInput.value = user.name || '';
   if (emailInput) emailInput.value = user.email || '';
+  if (phoneInput) phoneInput.value = user.phone || '';
+  if (dobInput) dobInput.value = user.dob || '';
+  if (panInput) panInput.value = user.pan || '';
+  if (bankInput) bankInput.value = user.bank || '';
+  if (ifscInput) ifscInput.value = user.ifsc || '';
+  
+  if (addrInput) addrInput.value = user.address || '';
+  if (occInput) occInput.value = user.occupation || 'Private Sector';
+  if (incInput) incInput.value = user.income || 'Below 1 Lakh';
+  if (dematInput) dematInput.value = user.demat || '';
+  if (segInput) segInput.value = user.segments || 'Equity & Mutual Funds';
+  if (nomInput) nomInput.value = user.nominee || '';
+  if (nomRelInput) nomRelInput.value = user.nomRelation || 'Spouse';
+
+  // Reset to first tab
+  switchProfileTab('personal');
 
   const modal = document.getElementById('profileModal');
   if (modal) modal.classList.add('active');
@@ -1818,8 +1868,36 @@ function closeProfileModal() {
 function saveProfile() {
   const nameInput = document.getElementById('profileNameInput');
   const emailInput = document.getElementById('profileEmailInput');
+  const phoneInput = document.getElementById('profilePhoneInput');
+  const dobInput = document.getElementById('profileDobInput');
+  const panInput = document.getElementById('profilePanInput');
+  const bankInput = document.getElementById('profileBankInput');
+  const ifscInput = document.getElementById('profileIfscInput');
+
+  // New fields
+  const addrInput = document.getElementById('profileAddressInput');
+  const occInput = document.getElementById('profileOccupationInput');
+  const incInput = document.getElementById('profileIncomeInput');
+  const dematInput = document.getElementById('profileDematInput');
+  const segInput = document.getElementById('profileSegmentsInput');
+  const nomInput = document.getElementById('profileNomineeInput');
+  const nomRelInput = document.getElementById('profileNomRelationInput');
+
   const newName = nameInput ? nameInput.value.trim() : '';
   const newEmail = emailInput ? emailInput.value.trim() : '';
+  const newPhone = phoneInput ? phoneInput.value.trim() : '';
+  const newDob = dobInput ? dobInput.value : '';
+  const newPan = panInput ? panInput.value.trim().toUpperCase() : '';
+  const newBank = bankInput ? bankInput.value.trim() : '';
+  const newIfsc = ifscInput ? ifscInput.value.trim().toUpperCase() : '';
+  
+  const newAddr = addrInput ? addrInput.value.trim() : '';
+  const newOcc = occInput ? occInput.value : '';
+  const newInc = incInput ? incInput.value : '';
+  const newDemat = dematInput ? dematInput.value.trim() : '';
+  const newSeg = segInput ? segInput.value : '';
+  const newNom = nomInput ? nomInput.value.trim() : '';
+  const newNomRel = nomRelInput ? nomRelInput.value : '';
   
   if (!newName) {
     alert('Name is required!');
@@ -1834,6 +1912,20 @@ function saveProfile() {
 
   user.name = newName;
   user.email = newEmail;
+  user.phone = newPhone;
+  user.dob = newDob;
+  user.pan = newPan;
+  user.bank = newBank;
+  user.ifsc = newIfsc;
+  
+  user.address = newAddr;
+  user.occupation = newOcc;
+  user.income = newInc;
+  user.demat = newDemat;
+  user.segments = newSeg;
+  user.nominee = newNom;
+  user.nomRelation = newNomRel;
+  
   localStorage.setItem('auth_user', JSON.stringify(user));
   
   closeProfileModal();
@@ -1841,4 +1933,16 @@ function saveProfile() {
   
   // Re-run the auth check to update UI widgets
   checkAuth();
+}
+
+function updateUploadLabel(input) {
+  const container = input.parentElement;
+  const label = container.querySelector('span');
+  if (input.files && input.files.length > 0) {
+    label.textContent = input.files[0].name;
+    container.classList.add('has-file');
+  } else {
+    label.textContent = 'Upload ' + (input.id.replace('Upload','').replace('pan','PAN '));
+    container.classList.remove('has-file');
+  }
 }
