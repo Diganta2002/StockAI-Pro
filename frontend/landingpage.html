@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>StockAI Pro — AI-Powered Stock Market Analysis</title>
+    <meta name="description"
+        content="StockAI Pro: Next-generation stock market analysis with real-time data, AI-powered recommendations, and an intelligent chat assistant." />
+    <meta name="keywords"
+        content="stock market, AI stock analysis, stock recommendations, stock chatbot, NSE, BSE, investing, trading" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+    <!-- ===== NAVBAR ===== -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <a href="#" class="nav-logo">
+                <div class="logo-icon">
+                    <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+                        <path d="M4 20 L8 14 L12 17 L16 9 L20 12 L24 6" stroke="url(#g1)" stroke-width="2.5"
+                            stroke-linecap="round" stroke-linejoin="round" />
+                        <circle cx="24" cy="6" r="2.5" fill="#00f5a0" />
+                        <defs>
+                            <linearGradient id="g1" x1="4" y1="20" x2="24" y2="6" gradientUnits="userSpaceOnUse">
+                                <stop stop-color="#00f5a0" />
+                                <stop offset="1" stop-color="#00d9f5" />
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
+                <span class="logo-text">StockAI <span class="logo-accent">Pro</span></span>
+            </a>
+            <div class="nav-links" id="navLinks">
+                <a href="#markets" class="nav-link">Markets</a>
+                <a href="#ai-picks" class="nav-link">AI Picks</a>
+                <a href="#screener" class="nav-link">Screener</a>
+                <a href="#news" class="nav-link">News</a>
+                <a href="#portfolio" class="nav-link">Portfolio</a>
+            </div>
+            <div class="nav-actions">
+                <button class="btn-outline" onclick="openChat()">&#x1F4AC; AI Chat</button>
+                <button class="theme-toggle-btn" id="themeToggle" onclick="toggleTheme()" title="Toggle light/dark mode"
+                    aria-label="Toggle theme">
+                    <div class="theme-knob" id="themeKnob">🌙</div>
+                </button>
+                <button class="btn-primary" onclick="window.location.href='index.html'">Get Started</button>
+                <button class="hamburger" id="hamburger" onclick="toggleMenu()">
+                    <span></span><span></span><span></span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ===== HERO SECTION ===== -->
+    <section class="hero" id="home">
+        <div class="hero-bg-grid"></div>
+        <div class="hero-particles" id="heroParticles"></div>
+        <div class="hero-content">
+            <div class="hero-badge">
+                <span class="badge-dot"></span>
+                <span>AI-Powered Market Intelligence</span>
+            </div>
+            <h1 class="hero-title">
+                Invest Smarter with<br />
+                <span class="gradient-text">AI Market Analysis</span>
+            </h1>
+            <p class="hero-subtitle">
+                Real-time stock data, AI-driven recommendations, and an intelligent chatbot — all in one premium
+                platform designed for modern investors.
+            </p>
+            <div class="hero-cta">
+                <button class="btn-primary btn-lg"
+                    onclick="document.getElementById('markets').scrollIntoView({behavior:'smooth'})">Explore
+                    Markets</button>
+                <button class="btn-ghost btn-lg" onclick="openChat()">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                    </svg>
+                    Chat with AI
+                </button>
+            </div>
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <span class="stat-value">&#x20B9;2.4T+</span>
+                    <span class="stat-label">Volume Tracked</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-item">
+                    <span class="stat-value">5,000+</span>
+                    <span class="stat-label">Stocks Analyzed</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-item">
+                    <span class="stat-value">94.2%</span>
+                    <span class="stat-label">AI Accuracy</span>
+                </div>
+            </div>
+        </div>
+        <div class="hero-chart-card">
+            <div class="chart-card-header">
+                <div>
+                    <div class="chart-card-title">NIFTY 50</div>
+                    <div class="chart-card-subtitle">National Stock Exchange</div>
+                </div>
+                <div class="chart-card-price">
+                    <span class="price-value" id="niftyPrice">24,832.15</span>
+                    <span class="price-change positive" id="niftyChange">+1.24%</span>
+                </div>
+            </div>
+            <canvas id="heroChart" width="400" height="180"></canvas>
+            <div class="chart-card-footer">
+                <span>Open: 24,510</span>
+                <span>High: 24,920</span>
+                <span>Low: 24,388</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== TICKER STRIP ===== -->
+    <div class="ticker-strip"
+        style="position: relative; top: 0; max-width: 1300px; margin: -2rem auto 4rem auto; border-radius: var(--radius-md);">
+        <div class="ticker-track" id="tickerTrack"></div>
+    </div>
+
+    <!-- ===== MARKET INDICES ===== -->
+    <section class="section" id="markets">
+        <div class="section-container">
+            <div class="section-header">
+                <h2 class="section-title">Market <span class="gradient-text">Overview</span></h2>
+                <p class="section-subtitle">Live indices and market movers powered by real-time data</p>
+            </div>
+            <div class="indices-grid" id="indicesGrid"></div>
+            <div class="market-tables">
+                <div class="table-card">
+                    <div class="table-card-header">
+                        <h3>&#x1F525; Top Gainers</h3>
+                        <span class="live-badge">LIVE</span>
+                    </div>
+                    <table class="stock-table" id="gainersTable">
+                        <thead>
+                            <tr>
+                                <th>Stock</th>
+                                <th>Price</th>
+                                <th>Change</th>
+                                <th>Volume</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+                <div class="table-card">
+                    <div class="table-card-header">
+                        <h3>&#x1F4C9; Top Losers</h3>
+                        <span class="live-badge">LIVE</span>
+                    </div>
+                    <table class="stock-table" id="losersTable">
+                        <thead>
+                            <tr>
+                                <th>Stock</th>
+                                <th>Price</th>
+                                <th>Change</th>
+                                <th>Volume</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== AI PICKS ===== -->
+    <section class="section section-dark" id="ai-picks">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="ai-badge"><span>&#x2736; AI Powered</span></div>
+                <h2 class="section-title">AI Stock <span class="gradient-text">Recommendations</span></h2>
+                <p class="section-subtitle">Our proprietary AI engine analyzes 150+ technical and fundamental indicators
+                    to deliver high-conviction trade ideas</p>
+            </div>
+            <div class="filter-tabs">
+                <button class="filter-tab active" onclick="filterPicks('all', this)">All</button>
+                <button class="filter-tab" onclick="filterPicks('buy', this)">Strong Buy</button>
+                <button class="filter-tab" onclick="filterPicks('hold', this)">Hold</button>
+                <button class="filter-tab" onclick="filterPicks('watch', this)">Watchlist</button>
+            </div>
+            <div class="picks-grid" id="picksGrid"></div>
+            <div class="ai-confidence">
+                <div class="confidence-header">
+                    <h3>&#x1F9E0; AI Model Confidence</h3>
+                    <span>Based on last 90 days performance</span>
+                </div>
+                <div class="confidence-bars" id="confidenceBars"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== STOCK SCREENER ===== -->
+    <section class="section" id="screener">
+        <div class="section-container">
+            <div class="section-header">
+                <h2 class="section-title">Stock <span class="gradient-text">Screener</span></h2>
+                <p class="section-subtitle">Filter stocks using advanced technical and fundamental criteria</p>
+            </div>
+            <div class="screener-card">
+                <div class="screener-filters">
+                    <div class="filter-group">
+                        <label>Market Cap</label>
+                        <select id="filterMarketCap" class="filter-select">
+                            <option value="">All</option>
+                            <option value="large">Large Cap (&gt;&#x20B9;20,000 Cr)</option>
+                            <option value="mid">Mid Cap (&#x20B9;5,000&#x2013;&#x20B9;20,000 Cr)</option>
+                            <option value="small">Small Cap (&lt;&#x20B9;5,000 Cr)</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Sector</label>
+                        <select id="filterSector" class="filter-select">
+                            <option value="">All Sectors</option>
+                            <option value="it">Information Technology</option>
+                            <option value="banking">Banking &amp; Finance</option>
+                            <option value="pharma">Pharmaceuticals</option>
+                            <option value="auto">Automobile</option>
+                            <option value="fmcg">FMCG</option>
+                            <option value="energy">Energy &amp; Power</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>PE Ratio</label>
+                        <select id="filterPE" class="filter-select">
+                            <option value="">Any</option>
+                            <option value="low">Under 15</option>
+                            <option value="mid">15&#x2013;30</option>
+                            <option value="high">Above 30</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>AI Signal</label>
+                        <select id="filterSignal" class="filter-select">
+                            <option value="">Any Signal</option>
+                            <option value="buy">Strong Buy</option>
+                            <option value="hold">Hold</option>
+                            <option value="sell">Sell</option>
+                        </select>
+                    </div>
+                    <button class="btn-primary" onclick="runScreener()">Run Screener</button>
+                </div>
+                <div class="screener-results" id="screenerResults">
+                    <div class="screener-placeholder">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="1.5">
+                            <circle cx="11" cy="11" r="8" />
+                            <path d="m21 21-4.35-4.35" />
+                        </svg>
+                        <p>Set your filters and click <strong>Run Screener</strong> to find stocks</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== MARKET HEATMAP ===== -->
+    <section class="section section-dark" id="heatmap">
+        <div class="section-container">
+            <div class="section-header">
+                <h2 class="section-title">Sector <span class="gradient-text">Heatmap</span></h2>
+                <p class="section-subtitle">Visual snapshot of sector performance today</p>
+            </div>
+            <div class="heatmap-grid" id="heatmapGrid"></div>
+        </div>
+    </section>
+
+    <!-- ===== NEWS SECTION ===== -->
+    <section class="section" id="news">
+        <div class="section-container">
+            <div class="section-header">
+                <h2 class="section-title">Market <span class="gradient-text">News</span></h2>
+                <p class="section-subtitle">AI-curated news with sentiment analysis</p>
+            </div>
+            <div class="news-grid" id="newsGrid"></div>
+        </div>
+    </section>
+
+    <!-- ===== PORTFOLIO TRACKER ===== -->
+    <section class="section section-dark" id="portfolio">
+        <div class="section-container">
+            <div class="section-header">
+                <h2 class="section-title">Portfolio <span class="gradient-text">Tracker</span></h2>
+                <p class="section-subtitle">Track your investments and analyze performance</p>
+            </div>
+            <div class="portfolio-layout">
+                <div class="portfolio-add">
+                    <h3>Add Stock</h3>
+                    <div class="portfolio-form">
+                        <input type="text" id="portStock" placeholder="Stock symbol (e.g., TCS)" class="port-input" />
+                        <input type="number" id="portQty" placeholder="Quantity" class="port-input" />
+                        <input type="number" id="portPrice" placeholder="Buy price (&#x20B9;)" class="port-input" />
+                        <button class="btn-primary" onclick="addToPortfolio()">Add Stock</button>
+                    </div>
+                </div>
+                <div class="portfolio-table-wrap">
+                    <table class="portfolio-table" id="portfolioTable">
+                        <thead>
+                            <tr>
+                                <th>Stock</th>
+                                <th>Qty</th>
+                                <th>Avg Price</th>
+                                <th>LTP</th>
+                                <th>P&amp;L</th>
+                                <th>P&amp;L %</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="portfolioBody">
+                            <tr>
+                                <td><strong>RELIANCE</strong></td>
+                                <td>50</td>
+                                <td>₹2,500.00</td>
+                                <td>₹2,931.91</td>
+                                <td class="up-text">+₹21,595.50</td>
+                                <td class="up-text">+17.28%</td>
+                                <td><button class="delete-btn" onclick="openAuthModal()">Remove</button></td>
+                            </tr>
+                            <tr>
+                                <td><strong>TCS</strong></td>
+                                <td>20</td>
+                                <td>₹3,800.00</td>
+                                <td>₹4,100.00</td>
+                                <td class="up-text">+₹6,000.00</td>
+                                <td class="up-text">+7.89%</td>
+                                <td><button class="delete-btn" onclick="openAuthModal()">Remove</button></td>
+                            </tr>
+                            <tr>
+                                <td><strong>HDFCBANK</strong></td>
+                                <td>100</td>
+                                <td>₹1,650.00</td>
+                                <td>₹1,783.56</td>
+                                <td class="up-text">+₹13,356.00</td>
+                                <td class="up-text">+8.09%</td>
+                                <td><button class="delete-btn" onclick="openAuthModal()">Remove</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="portfolio-summary" id="portfolioSummary">
+                        <div class="summary-item">
+                            <div class="summary-label">Total Invested</div>
+                            <div class="summary-value">₹3,66,000.00</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-label">Current Value</div>
+                            <div class="summary-value">₹4,06,951.50</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-label">Total P&amp;L</div>
+                            <div class="summary-value up-text">+₹40,951.50</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-label">Return %</div>
+                            <div class="summary-value up-text">+11.19%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== FEATURES SECTION ===== -->
+    <section class="section features-section">
+        <div class="section-container">
+            <div class="section-header">
+                <h2 class="section-title">Why Choose <span class="gradient-text">StockAI Pro</span></h2>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">&#x1F916;</div>
+                    <h3>AI Chatbot</h3>
+                    <p>Ask anything about stocks, markets, strategies &mdash; get instant intelligent answers powered by
+                        advanced AI</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">&#x1F4CA;</div>
+                    <h3>Technical Analysis</h3>
+                    <p>150+ indicators including RSI, MACD, Bollinger Bands, moving averages and more</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">&#x26A1;</div>
+                    <h3>Real-Time Data</h3>
+                    <p>Live market feeds with sub-second latency for NSE and BSE listed securities</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">&#x1F3AF;</div>
+                    <h3>Smart Picks</h3>
+                    <p>AI scans 5,000+ stocks daily to surface high-potential investment opportunities</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">&#x1F6E1;&#xFE0F;</div>
+                    <h3>Risk Analysis</h3>
+                    <p>Portfolio risk scoring, drawdown analysis, and volatility assessment in real time</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">&#x1F4F0;</div>
+                    <h3>Sentiment Analysis</h3>
+                    <p>AI reads thousands of news articles and social posts to gauge market sentiment</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-brand">
+                <div class="nav-logo">
+                    <div class="logo-icon">
+                        <svg width="24" height="24" viewBox="0 0 28 28" fill="none">
+                            <path d="M4 20 L8 14 L12 17 L16 9 L20 12 L24 6" stroke="url(#gf)" stroke-width="2.5"
+                                stroke-linecap="round" stroke-linejoin="round" />
+                            <circle cx="24" cy="6" r="2.5" fill="#00f5a0" />
+                            <defs>
+                                <linearGradient id="gf" x1="4" y1="20" x2="24" y2="6" gradientUnits="userSpaceOnUse">
+                                    <stop stop-color="#00f5a0" />
+                                    <stop offset="1" stop-color="#00d9f5" />
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                    </div>
+                    <span class="logo-text">StockAI <span class="logo-accent">Pro</span></span>
+                </div>
+                <p>AI-powered stock market intelligence for modern investors. Not SEBI registered. For educational
+                    purposes only.</p>
+            </div>
+            <div class="footer-links">
+                <div class="footer-col">
+                    <h4>Markets</h4><a href="#">NSE Stocks</a><a href="#">BSE Stocks</a><a href="#">Indices</a><a
+                        href="#">Commodities</a>
+                </div>
+                <div class="footer-col">
+                    <h4>Tools</h4><a href="#">Stock Screener</a><a href="#">AI Picks</a><a href="#">Portfolio</a><a
+                        href="#">Heatmap</a>
+                </div>
+                <div class="footer-col">
+                    <h4>Company</h4><a href="#">About</a><a href="#">Blog</a><a href="#">Contact</a><a
+                        href="#">Privacy</a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span>&copy; 2026 StockAI Pro. All rights reserved.</span>
+            <span>&#x26A0;&#xFE0F; Investments are subject to market risks. Please read all documents carefully.</span>
+        </div>
+    </footer>
+
+    <!-- ===== AI CHAT WIDGET ===== -->
+    <div class="chat-fab" id="chatFab" onclick="openChat()">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+        </svg>
+        <div class="chat-fab-badge">AI</div>
+    </div>
+    <div class="chat-overlay" id="chatOverlay" onclick="closeChat()"></div>
+    <div class="chat-panel" id="chatPanel">
+        <div class="chat-header">
+            <div class="chat-avatar">
+                <div class="avatar-ring">
+                    <div class="avatar-dot"></div>
+                </div>
+                <div class="chat-header-info">
+                    <span class="chat-name">StockAI Assistant</span>
+                    <span class="chat-status">&#x25CF; Online &middot; Powered by AI</span>
+                </div>
+            </div>
+            <button class="chat-close" onclick="closeChat()">&#x2715;</button>
+        </div>
+        <div class="chat-suggestions" id="chatSuggestions">
+            <p class="suggestions-label">Try asking:</p>
+            <div class="suggestion-chips">
+                <button class="chip" onclick="sendSuggestion(this)">&#x1F4C8; Best stocks to buy today?</button>
+                <button class="chip" onclick="sendSuggestion(this)">&#x1F50D; Analyze TCS stock</button>
+                <button class="chip" onclick="sendSuggestion(this)">&#x1F4A1; What is PE ratio?</button>
+                <button class="chip" onclick="sendSuggestion(this)">&#x1F4C9; Market outlook 2026</button>
+                <button class="chip" onclick="sendSuggestion(this)">&#x26A1; Explain candlestick patterns</button>
+                <button class="chip" onclick="sendSuggestion(this)">&#x1F6E1;&#xFE0F; How to reduce portfolio
+                    risk?</button>
+            </div>
+        </div>
+        <div class="chat-messages" id="chatMessages">
+            <div class="message bot-message">
+                <div class="message-avatar">&#x1F916;</div>
+                <div class="message-bubble">
+                    <p>Hello! I'm <strong>StockAI</strong>, your intelligent market assistant. I can help you with:</p>
+                    <ul>
+                        <li>&#x1F4CA; Stock analysis &amp; recommendations</li>
+                        <li>&#x1F4C8; Market trends &amp; news</li>
+                        <li>&#x1F4B9; Technical &amp; fundamental analysis</li>
+                        <li>&#x1F3AF; Portfolio advice</li>
+                    </ul>
+                    <p>What would you like to know?</p>
+                </div>
+            </div>
+        </div>
+        <div class="chat-input-area">
+            <div class="chat-input-wrap">
+                <input type="text" id="chatInput" placeholder="Ask about any stock or market..."
+                    onkeypress="handleChatKey(event)" />
+                <button class="chat-send-btn" onclick="sendChatMessage()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
+                    </svg>
+                </button>
+            </div>
+            <span class="chat-disclaimer">AI responses are for educational purposes only, not financial advice.</span>
+        </div>
+    </div>
+
+    <!-- ===== STOCK DETAIL MODAL ===== -->
+    <div class="modal-overlay" id="stockModal" onclick="closeStockModal()">
+        <div class="modal-card" onclick="event.stopPropagation()">
+            <div class="modal-header" id="modalHeader">
+                <div>
+                    <h2 id="modalStockName">Stock Name</h2>
+                    <span id="modalSector" class="modal-sector">Sector</span>
+                </div>
+                <div class="modal-price-block">
+                    <div class="modal-price" id="modalPrice">&#x20B9;0</div>
+                    <div class="modal-change" id="modalChange">+0.00%</div>
+                </div>
+                <button class="modal-close" onclick="closeStockModal()">&#x2715;</button>
+            </div>
+            <canvas id="modalChart" height="200"></canvas>
+            <div class="modal-metrics" id="modalMetrics"></div>
+            <div class="modal-ai-section">
+                <h3>&#x1F916; AI Analysis</h3>
+                <p id="modalAIText"></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js?v=1.0.2" defer></script>
+</body>
+
+</html>

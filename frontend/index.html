@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>StockAI Pro — Intelligent Wealth Insights</title>
+  <meta name="description"
+    content="StockAI Pro: Next-generation fund analysis with real-time AMFI data, AI-powered recommendations, and intelligent salary-based SIP planning." />
+  <meta name="keywords"
+    content="mutual funds, StockAI Pro, fund recommendations, SIP calculator, NSE, BSE, investing, wealth" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+  <!-- ===== DASHBOARD LAYOUT WRAPPER ===== -->
+  <div class="dashboard-wrapper" id="dashboardWrapper"
+    style="filter: blur(10px) brightness(0.4); pointer-events: none; transition: filter 0.4s ease, brightness 0.4s ease;">
+
+    <!-- ===== TOP NAVBAR ===== -->
+    <header class="top-navbar" id="topNavbar">
+      <div class="nav-container">
+        <a href="#" class="nav-logo">
+          <div class="logo-icon">
+            <svg width="24" height="24" viewBox="0 0 28 28" fill="none">
+              <path d="M4 20 L8 14 L12 17 L16 9 L20 12 L24 6" stroke="url(#g1)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="24" cy="6" r="2.5" fill="#00f5a0"/>
+              <defs>
+                <linearGradient id="g1" x1="4" y1="20" x2="24" y2="6" gradientUnits="userSpaceOnUse">
+                  <stop stop-color="#00f5a0"/><stop offset="1" stop-color="#00d9f5"/>
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
+          <span class="logo-text" style="font-size: 1.1rem;">StockAI <span class="logo-accent">Pro</span></span>
+        </a>
+
+        <!-- Navigation tabs -->
+        <div class="nav-links">
+          <button class="nav-tab-btn sidebar-btn active" id="tab-btn-markets" onclick="switchSidebarTab('markets')">Markets</button>
+          <button class="nav-tab-btn sidebar-btn" id="tab-btn-picks" onclick="switchSidebarTab('picks')">AI Picks</button>
+          <button class="nav-tab-btn sidebar-btn" id="tab-btn-sip" onclick="switchSidebarTab('sip')">SIP Planner</button>
+          <button class="nav-tab-btn sidebar-btn" id="tab-btn-news" onclick="switchSidebarTab('news')">News</button>
+          <button class="nav-tab-btn sidebar-btn" id="tab-btn-portfolio" onclick="switchSidebarTab('portfolio')">Portfolio</button>
+        </div>
+
+        <!-- Search & actions -->
+        <div class="nav-actions" style="display: flex; align-items: center; gap: 8px;">
+          <!-- Stock Search Button & Input -->
+          <div class="search-container" style="position: relative;">
+            <input type="text" id="stockSearchInput" placeholder="Search funds..." class="port-input" style="padding: 6px 12px 6px 30px; font-size: 0.8rem; width: 160px; transition: width 0.3s; border-radius: 20px;" onfocus="this.style.width='220px'; document.getElementById('searchDropdown').style.display='block';" onblur="setTimeout(() => { this.style.width='160px'; document.getElementById('searchDropdown').style.display='none'; }, 200)" />
+            <span style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-size: 0.85rem; color: var(--text-muted);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg></span>
+            <div id="searchDropdown" class="search-dropdown" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-sm); z-index: 100; max-height: 200px; overflow-y: auto; box-shadow: var(--shadow-md); margin-top: 5px;"></div>
+          </div>
+
+          <button class="btn-outline" onclick="openChat()" style="padding: 6px 12px; font-size: 0.8rem;">AI Chat</button>
+          
+          <button class="theme-toggle-btn" id="themeToggle" onclick="toggleTheme()" title="Toggle theme" style="margin: 0; width: 44px; height: 26px;">
+            <div class="theme-knob" id="themeKnob" style="width: 18px; height: 18px;"></div>
+          </button>
+
+          <div class="user-profile-widget" id="sidebarUserProfile" style="display: none; align-items: center; gap: 8px;">
+            <div class="auth-avatar" id="sidebarAvatar" style="width: 28px; height: 28px; font-size: 0.8rem;">U</div>
+            <span class="user-profile-name" id="sidebarUserName" style="font-size: 0.8rem; max-width: 80px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">Guest</span>
+          </div>
+
+          <button class="btn-primary" id="navAuthBtn" onclick="handleNavAuthClick()" style="padding: 6px 14px; font-size: 0.8rem; border-radius: 20px;">Get Started</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- ===== MAIN CONTENT VIEWPONT ===== -->
+    <main class="main-content">
+
+      <!-- ===== TICKER STRIP ===== -->
+      <div class="ticker-strip"
+        style="position: relative; top: 0; margin-bottom: 1.5rem; border-radius: var(--radius-md);">
+        <div class="ticker-track" id="tickerTrack"></div>
+      </div>
+
+      <!-- ===== TAB PANEL: MARKETS ===== -->
+      <div id="panel-markets" class="tab-panel active">
+        <section class="section" id="markets" style="padding-top: 1rem;">
+          <div class="section-container">
+            <div class="section-header" style="text-align: left; margin-bottom: 1.5rem;">
+              <h2 class="section-title">All Mutual Funds & <span class="gradient-text">Equities</span></h2>
+              <p class="section-subtitle" style="margin: 0;">Browse, compare, and invest in top-performing funds and equities</p>
+            </div>
+            <div class="funds-card-grid" id="fundsCardGrid">
+              <!-- Cards rendered dynamically by app.js -->
+            </div>
+          </div>
+        </section>
+      </div> <!-- END TAB PANEL: MARKETS -->
+
+      <!-- ===== TAB PANEL: AI PICKS ===== -->
+      <div id="panel-picks" class="tab-panel">
+
+        <!-- ===== AI PICKS ===== -->
+        <section class="section section-dark" id="ai-picks">
+          <div class="section-container">
+            <div class="section-header">
+              <div class="ai-badge"><span>&#x2736; AI Powered</span></div>
+              <h2 class="section-title">AI Stock <span class="gradient-text">Recommendations</span></h2>
+              <p class="section-subtitle">Our proprietary AI engine analyzes 150+ technical and fundamental indicators
+                to deliver high-conviction trade ideas</p>
+            </div>
+            <div class="filter-tabs">
+              <button class="filter-tab active" onclick="filterPicks('all', this)">All</button>
+              <button class="filter-tab" onclick="filterPicks('buy', this)">Strong Buy</button>
+              <button class="filter-tab" onclick="filterPicks('hold', this)">Hold</button>
+              <button class="filter-tab" onclick="filterPicks('watch', this)">Watchlist</button>
+            </div>
+            <div class="picks-grid" id="picksGrid"></div>
+            <div class="ai-confidence">
+              <div class="confidence-header">
+                <h3>AI Model Confidence</h3>
+                <span>Based on last 90 days performance</span>
+              </div>
+              <div class="confidence-bars" id="confidenceBars"></div>
+            </div>
+          </div>
+        </section>
+      </div> <!-- END TAB PANEL: AI PICKS -->
+
+      <!-- ===== TAB PANEL: SIP PLANNER ===== -->
+      <div id="panel-sip" class="tab-panel">
+
+        <!-- ===== AI SALARY PLANNER & SIP CALCULATOR ===== -->
+        <section class="section" id="sip-calculator">
+          <div class="section-container">
+            <div class="section-header">
+              <div class="ai-badge"><span>Smart Wealth Planner</span></div>
+              <h2 class="section-title">AI SIP &amp; <span class="gradient-text">Salary Recommender</span></h2>
+              <p class="section-subtitle">Plan your future wealth based on your monthly salary and let AI suggest the
+                perfect funds.</p>
+            </div>
+
+            <div class="market-tables"
+              style="grid-template-columns: repeat(auto-fit, minmax(min(100%, 480px), 1fr)); gap: 28px;">
+
+              <!-- LEFT PANEL: AI SALARY PLANNER -->
+              <div class="table-card" style="padding: 24px;">
+                <div class="table-card-header" style="padding: 0 0 16px 0; margin-bottom: 20px;">
+                  <h3>Salary-Based AI Recommendation</h3>
+                  <span class="live-badge">SMART</span>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+                  <div class="filter-group">
+                    <label style="display: flex; justify-content: space-between;">
+                      <span>Monthly Salary</span>
+                      <span style="color: var(--accent-green); font-weight: 700;" id="salaryValDisplay">₹50,000</span>
+                    </label>
+                    <input type="range" id="inputSalary" min="10000" max="500000" step="5000" value="50000"
+                      class="filter-select"
+                      style="padding: 0; height: 6px; -webkit-appearance: none; background: var(--input-bg); border: none;"
+                      oninput="updateSalaryDisplay(this.value)" />
+                  </div>
+
+                  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="filter-group">
+                      <label>Risk Appetite</label>
+                      <select id="inputRisk" class="filter-select">
+                        <option value="High">High (High Returns, Equity)</option>
+                        <option value="Moderate">Moderate (Balanced, Hybrid)</option>
+                        <option value="Low">Low (Safe, Debt/Liquid)</option>
+                      </select>
+                    </div>
+
+                    <div class="filter-group">
+                      <label>Investment Tenure</label>
+                      <select id="inputTenure" class="filter-select">
+                        <option value="Long">Long Term (5+ Years)</option>
+                        <option value="Medium">Medium Term (3-5 Years)</option>
+                        <option value="Short">Short Term (1-3 Years)</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <button class="btn-primary" onclick="generateAISIPPlan()"
+                    style="padding: 12px; font-size: 0.95rem; width: 100%;">Analyze and Recommend Funds</button>
+
+                  <div class="ai-confidence" id="sipPlanResult"
+                    style="margin-top: 10px; display: none; padding: 20px; border-radius: var(--radius-md); background: var(--input-bg); border: 1px solid var(--border);">
+                    <!-- Dynamic AI output will render here -->
+                  </div>
+                </div>
+              </div>
+
+              <!-- RIGHT PANEL: INTERACTIVE SIP CALCULATOR -->
+              <div class="table-card" style="padding: 24px;">
+                <div class="table-card-header" style="padding: 0 0 16px 0; margin-bottom: 20px;">
+                  <h3>Interactive SIP Calculator</h3>
+                  <span class="live-badge">CALCULATOR</span>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+                  <div class="filter-group">
+                    <label style="display: flex; justify-content: space-between;">
+                      <span>Monthly SIP Amount</span>
+                      <span style="color: var(--accent-green); font-weight: 700;" id="sipAmountDisplay">₹5,000</span>
+                    </label>
+                    <input type="range" id="inputSipAmount" min="500" max="100000" step="500" value="5000"
+                      class="filter-select"
+                      style="padding: 0; height: 6px; -webkit-appearance: none; background: var(--input-bg); border: none;"
+                      oninput="updateSIPAmountDisplay(this.value)" />
+                  </div>
+
+                  <div class="filter-group">
+                    <label style="display: flex; justify-content: space-between;">
+                      <span>Expected Annual Returns</span>
+                      <span style="color: var(--accent-green); font-weight: 700;" id="sipRateDisplay">12%</span>
+                    </label>
+                    <input type="range" id="inputSipRate" min="5" max="30" step="0.5" value="12" class="filter-select"
+                      style="padding: 0; height: 6px; -webkit-appearance: none; background: var(--input-bg); border: none;"
+                      oninput="updateSIPRateDisplay(this.value)" />
+                  </div>
+
+                  <div class="filter-group">
+                    <label style="display: flex; justify-content: space-between;">
+                      <span>Tenure (Years)</span>
+                      <span style="color: var(--accent-green); font-weight: 700;" id="sipYearsDisplay">10 Years</span>
+                    </label>
+                    <input type="range" id="inputSipYears" min="1" max="30" step="1" value="10" class="filter-select"
+                      style="padding: 0; height: 6px; -webkit-appearance: none; background: var(--input-bg); border: none;"
+                      oninput="updateSIPYearsDisplay(this.value)" />
+                  </div>
+
+                  <div class="picks-metrics" style="grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
+                    <div class="pick-metric">
+                      <div class="pick-metric-label">Total Invested</div>
+                      <div class="pick-metric-value" id="sipInvestedText">₹6,00,000</div>
+                    </div>
+                    <div class="pick-metric">
+                      <div class="pick-metric-label">Estimated Returns</div>
+                      <div class="pick-metric-value" id="sipReturnsText">₹5,23,232</div>
+                    </div>
+                    <div class="pick-metric"
+                      style="grid-column: span 2; background: rgba(0, 245, 160, 0.05); border: 1px solid rgba(0, 245, 160, 0.15);">
+                      <div class="pick-metric-label">Total Future Wealth</div>
+                      <div class="pick-metric-value" style="color: var(--accent-green); font-size: 1.25rem;"
+                        id="sipTotalText">₹11,23,232</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </section>
+      </div> <!-- END TAB PANEL: SIP PLANNER -->
+
+      <!-- ===== TAB PANEL: NEWS ===== -->
+      <div id="panel-news" class="tab-panel">
+
+        <!-- ===== NEWS SECTION ===== -->
+        <section class="section" id="news">
+          <div class="section-container">
+            <div class="section-header">
+              <h2 class="section-title">Market <span class="gradient-text">News</span></h2>
+              <p class="section-subtitle">AI-curated news with sentiment analysis</p>
+            </div>
+            <div class="news-grid" id="newsGrid"></div>
+          </div>
+        </section>
+      </div> <!-- END TAB PANEL: NEWS -->
+
+      <!-- ===== TAB PANEL: PORTFOLIO ===== -->
+      <div id="panel-portfolio" class="tab-panel">
+
+        <!-- ===== PORTFOLIO TRACKER ===== -->
+        <section class="section section-dark" id="portfolio">
+          <div class="section-container">
+            <div class="section-header">
+              <h2 class="section-title">Portfolio <span class="gradient-text">Tracker</span></h2>
+              <p class="section-subtitle">Track your investments and analyze performance</p>
+            </div>
+            <div class="portfolio-layout">
+              <div class="portfolio-add">
+                <h3>Add Stock</h3>
+                <div class="portfolio-form">
+                  <input type="text" id="portStock" placeholder="Stock symbol (e.g., TCS)" class="port-input" />
+                  <input type="number" id="portQty" placeholder="Quantity" class="port-input" />
+                  <input type="number" id="portPrice" placeholder="Buy price (&#x20B9;)" class="port-input" />
+                  <button class="btn-primary" onclick="addToPortfolio()">Add Stock</button>
+                </div>
+              </div>
+              <div class="portfolio-table-wrap">
+                <table class="portfolio-table" id="portfolioTable">
+                  <thead>
+                    <tr>
+                      <th>Stock</th>
+                      <th>Qty</th>
+                      <th>Avg Price</th>
+                      <th>LTP</th>
+                      <th>P&amp;L</th>
+                      <th>P&amp;L %</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="portfolioBody">
+                    <tr>
+                      <td colspan="7" class="empty-row">No stocks added yet. Add your first stock!</td>
+                    </tr>
+                  </tbody>
+                </table>
+                <div class="portfolio-summary" id="portfolioSummary"></div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div> <!-- END TAB PANEL: PORTFOLIO -->
+
+      <!-- ===== FEATURES SECTION ===== -->
+      <section class="section features-section">
+        <div class="section-container">
+          <div class="section-header">
+            <h2 class="section-title">Why Choose <span class="gradient-text">StockAI Pro</span></h2>
+          </div>
+          <div class="features-grid">
+            <div class="feature-card">
+              <div class="feature-icon">AI</div>
+              <h3>AI Chatbot</h3>
+              <p>Ask anything about mutual funds, SIPs, strategies &mdash; get instant intelligent answers powered by
+                advanced AI</p>
+            </div>
+            <div class="feature-card">
+              <div class="feature-icon">S</div>
+              <h3>Suitability Analysis</h3>
+              <p>Evaluates fund risk ratios against user age, salary, and investment targets</p>
+            </div>
+            <div class="feature-card">
+              <div class="feature-icon">R</div>
+              <h3>Real-Time Data</h3>
+              <p>Live AMFI market feeds syncing daily NAVs for Indian mutual fund schemes</p>
+            </div>
+            <div class="feature-card">
+              <div class="feature-icon">P</div>
+              <h3>Smart Picks</h3>
+              <p>AI scans hundreds of fund houses to surface high-potential wealth opportunities</p>
+            </div>
+            <div class="feature-card">
+              <div class="feature-icon">R</div>
+              <h3>Risk Management</h3>
+              <p>Volatility indexes, asset allocation matching, and diversification checks in real time</p>
+            </div>
+            <div class="feature-card">
+              <div class="feature-icon">N</div>
+              <h3>Sentiment Signals</h3>
+              <p>AI parses financial news sentiment to highlight matching fund entry indicators</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== FOOTER ===== -->
+      <footer class="footer">
+        <div class="footer-container">
+          <div class="footer-brand">
+            <div class="nav-logo">
+              <div class="logo-icon">
+                <svg width="24" height="24" viewBox="0 0 28 28" fill="none">
+                  <path d="M4 20 L8 14 L12 17 L16 9 L20 12 L24 6" stroke="url(#gf)" stroke-width="2.5"
+                    stroke-linecap="round" stroke-linejoin="round" />
+                  <circle cx="24" cy="6" r="2.5" fill="#00f5a0" />
+                  <defs>
+                    <linearGradient id="gf" x1="4" y1="20" x2="24" y2="6" gradientUnits="userSpaceOnUse">
+                      <stop stop-color="#00f5a0" />
+                      <stop offset="1" stop-color="#00d9f5" />
+                    </linearGradient>
+                  </defs>
+                </svg>
+              </div>
+              <span class="logo-text">StockAI <span class="logo-accent">Pro</span></span>
+            </div>
+            <p>AI-powered mutual fund intelligence for modern wealth creation. Not SEBI registered. For educational
+              purposes only.</p>
+          </div>
+          <div class="footer-links">
+            <div class="footer-col">
+              <h4>Markets</h4><a href="#">Indian Mutual Funds</a><a href="#">AMFI NAVs</a><a href="#">Indices</a><a
+                href="#">Commodities</a>
+            </div>
+            <div class="footer-col">
+              <h4>Tools</h4><a href="#">SIP Calculator</a><a href="#">AI Picks</a><a href="#">Portfolio</a><a
+                href="#">AI Signals</a>
+            </div>
+            <div class="footer-col">
+              <h4>Company</h4><a href="#">About</a><a href="#">Blog</a><a href="#">Contact</a><a href="#">Privacy</a>
+            </div>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <span>&copy; 2026 StockAI Pro. All rights reserved.</span>
+          <span>Investments are subject to market risks. Please read all documents carefully.</span>
+        </div>
+      </footer>
+    </main>
+  </div> <!-- END DASHBOARD LAYOUT WRAPPER -->
+
+  <!-- ===== AI CHAT WIDGET ===== -->
+  <div class="chat-fab" id="chatFab" onclick="openChat()">
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+    </svg>
+    <div class="chat-fab-badge">AI</div>
+  </div>
+  <div class="chat-overlay" id="chatOverlay" onclick="closeChat()"></div>
+  <div class="chat-panel" id="chatPanel">
+    <div class="chat-header">
+      <div class="chat-avatar">
+        <div class="avatar-ring">
+          <div class="avatar-dot"></div>
+        </div>
+        <div class="chat-header-info">
+          <span class="chat-name">StockAI Assistant</span>
+          <span class="chat-status">&#x25CF; Online &middot; Powered by AI</span>
+        </div>
+      </div>
+      <button class="chat-close" onclick="closeChat()">&#x2715;</button>
+    </div>
+    <div class="chat-suggestions" id="chatSuggestions">
+      <p class="suggestions-label">Try asking:</p>
+      <div class="suggestion-chips">
+        <button class="chip" onclick="sendSuggestion(this)">Best stocks to buy today?</button>
+        <button class="chip" onclick="sendSuggestion(this)">Analyze TCS stock</button>
+        <button class="chip" onclick="sendSuggestion(this)">What is PE ratio?</button>
+        <button class="chip" onclick="sendSuggestion(this)">Market outlook 2026</button>
+        <button class="chip" onclick="sendSuggestion(this)">Explain candlestick patterns</button>
+        <button class="chip" onclick="sendSuggestion(this)">How to reduce portfolio risk?</button>
+      </div>
+    </div>
+    <div class="chat-messages" id="chatMessages">
+      <div class="message bot-message">
+        <div class="message-avatar">AI</div>
+        <div class="message-bubble">
+          <p>Hello! I'm <strong>StockAI</strong>, your intelligent market assistant. I can help you with:</p>
+          <ul>
+            <li>Stock analysis &amp; recommendations</li>
+            <li>Market trends &amp; news</li>
+            <li>Technical &amp; fundamental analysis</li>
+            <li>Portfolio advice</li>
+          </ul>
+          <p>What would you like to know?</p>
+        </div>
+      </div>
+    </div>
+    <div class="chat-input-area">
+      <div class="chat-input-wrap">
+        <input type="text" id="chatInput" placeholder="Ask about any stock or market..."
+          onkeypress="handleChatKey(event)" />
+        <button class="chat-send-btn" onclick="sendChatMessage()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
+          </svg>
+        </button>
+      </div>
+      <span class="chat-disclaimer">AI responses are for educational purposes only, not financial advice.</span>
+    </div>
+  </div>
+
+  <!-- ===== STOCK DETAIL MODAL ===== -->
+  <div class="modal-overlay" id="stockModal" onclick="closeStockModal()">
+    <div class="modal-card" onclick="event.stopPropagation()">
+      <div class="modal-header" id="modalHeader">
+        <div>
+          <h2 id="modalStockName">Stock Name</h2>
+          <span id="modalSector" class="modal-sector">Sector</span>
+        </div>
+        <div class="modal-price-block">
+          <div class="modal-price" id="modalPrice">&#x20B9;0</div>
+          <div class="modal-change" id="modalChange">+0.00%</div>
+        </div>
+        <button class="modal-close" onclick="closeStockModal()">&#x2715;</button>
+      </div>
+      <canvas id="modalChart" height="200"></canvas>
+      <div class="modal-metrics" id="modalMetrics"></div>
+      <div class="modal-ai-section">
+        <h3>AI Analysis</h3>
+        <p id="modalAIText"></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== AUTHENTICATION MODAL ===== -->
+  <div class="modal-overlay active" id="authModal">
+    <div class="auth-split-card" onclick="event.stopPropagation()">
+      
+      <!-- Left Panel (Illustration) -->
+      <div class="auth-left-panel">
+        <div class="auth-logo">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #00f5a0; margin-right: 8px;">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+          </svg>
+          <span style="color: #0f172a; font-weight: 700;">StockAI <span style="color: #2563eb;">Pro</span></span>
+        </div>
+        
+        <div class="auth-chart-wrapper">
+          <div class="auth-chart-card">
+            <div class="acc-header">
+              <span class="acc-title">NIFTY 50 — Today</span>
+              <span class="acc-dots">...</span>
+            </div>
+            <div class="acc-value">24,832</div>
+            <div class="acc-chart-area">
+              <div class="acc-y-axis">
+                <span>100%</span><span>80</span><span>60</span><span>40</span><span>20</span><span>0</span>
+              </div>
+              <div class="acc-lines">
+                <svg width="100%" height="100%" viewBox="0 0 200 80" preserveAspectRatio="none">
+                  <defs>
+                    <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.2"/>
+                      <stop offset="100%" stop-color="#3b82f6" stop-opacity="0"/>
+                    </linearGradient>
+                  </defs>
+                  <path d="M0 60 L40 60 L80 40 L120 40 L200 10 L200 80 L0 80 Z" fill="url(#chartGradient)"/>
+                  <polyline points="0 60 40 60 80 40 120 40 200 10" fill="none" stroke="#00f5a0" stroke-width="2" />
+                  <polyline points="0 65 35 65 75 48 115 48 200 18" fill="none" stroke="#2563eb" stroke-width="2" />
+                </svg>
+              </div>
+            </div>
+            <div class="acc-legend">
+              <span class="acc-leg-item"><span class="acc-dot" style="background:#00f5a0;"></span> AI Target</span>
+              <span class="acc-leg-item"><span class="acc-dot" style="background:#2563eb;"></span> Actual</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="auth-left-text">
+          Can't wait to show you what's new.<br>
+          <strong>Sign in and see for yourself!</strong>
+        </div>
+      </div>
+
+      <!-- Right Panel (Form) -->
+      <div class="auth-right-panel">
+        <button class="modal-close" id="authModalCloseBtn" onclick="closeAuthModal()" style="display: none;">&#x2715;</button>
+        <div class="auth-top-right">
+          <span id="authSwitchText" style="display: none;"></span>
+          <a href="#" id="authSwitchLink" onclick="switchAuthMode(event)">Sign up ></a>
+        </div>
+
+        <div class="auth-form-container">
+          <h2 id="authModalTitle">Log in</h2>
+          
+          <div id="authErrorMsg" class="auth-error-msg" style="display: none;"></div>
+
+          <form id="authForm" onsubmit="handleAuthFormSubmit(event)">
+            <div class="auth-input-group" id="authNameGroup" style="display: none;">
+              <label>Full name</label>
+              <input type="text" id="authName" placeholder="Your Name" />
+            </div>
+
+            <div class="auth-input-group" id="authEmailGroup">
+              <label>Email address</label>
+              <input type="email" id="authEmail" placeholder="Email address" required />
+            </div>
+
+            <div class="auth-input-group" id="authOtpGroup" style="display: none;">
+              <label>Enter 6-Digit OTP</label>
+              <input type="text" id="authOtp" placeholder="Enter OTP" />
+            </div>
+
+            <div class="auth-input-group" id="authPasswordGroup">
+              <label id="authPasswordLabel">Enter your password</label>
+              <div class="auth-password-wrapper">
+                <input type="password" id="authPassword" placeholder="Password" required />
+                <button type="button" class="auth-pwd-toggle">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                </button>
+              </div>
+            </div>
+
+            <button type="submit" id="authSubmitBtn" class="auth-submit-btn">Log in ></button>
+            
+            <div class="auth-forgot-row">
+              <span>Forgot your password?</span>
+              <a href="#" id="authForgotLink" onclick="switchForgotPasswordMode(event)">Reset now</a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== AI SUITABILITY MODAL ===== -->
+  <div class="modal-overlay" id="suitabilityModal" onclick="closeSuitabilityModal()">
+    <div class="modal-card" onclick="event.stopPropagation()" style="max-width: 450px; padding: 2rem;">
+      <div class="modal-header" style="border: none; padding-bottom: 0;">
+        <div>
+          <h2 style="font-size: 1.35rem; font-weight: 800;">AI Suitability Checker</h2>
+          <span id="suitabilityFundName" style="color: var(--accent-green); font-size: 0.85rem; font-weight: 600;">Fund
+            Name</span>
+        </div>
+        <button class="modal-close" onclick="closeSuitabilityModal()">&#x2715;</button>
+      </div>
+      <form id="suitabilityForm" onsubmit="calculateAIFundSuitability(event)"
+        style="display: flex; flex-direction: column; gap: 1rem; margin-top: 1.25rem;">
+        <input type="hidden" id="suitabilitySym" />
+
+        <div class="filter-group">
+          <label>Your Age</label>
+          <input type="number" id="suitabilityAge" class="filter-select" placeholder="e.g. 28" required
+            style="width: 100%; -webkit-appearance: none; appearance: none; background-image: none;" />
+        </div>
+
+        <div class="filter-group">
+          <label>Investment Horizon (Years)</label>
+          <input type="number" id="suitabilityHorizon" class="filter-select" placeholder="e.g. 5" required
+            style="width: 100%; -webkit-appearance: none; appearance: none; background-image: none;" />
+        </div>
+
+        <div class="filter-group">
+          <label>Risk Appetite</label>
+          <select id="suitabilityRisk" class="filter-select" style="width: 100%;">
+            <option value="low">Low Risk (Conservative)</option>
+            <option value="moderate" selected>Moderate Risk (Balanced)</option>
+            <option value="high">High Risk (Aggressive)</option>
+          </select>
+        </div>
+
+        <button type="submit" class="btn-primary" style="width: 100%; padding: 0.8rem; margin-top: 0.5rem;">Evaluate
+          Suitability</button>
+      </form>
+
+      <div id="suitabilityResult"
+        style="display: none; margin-top: 1.5rem; padding: 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--input-bg);">
+        <!-- Results loaded dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== QUICK BUY MODAL ===== -->
+  <div class="modal-overlay" id="quickBuyModal" onclick="closeQuickBuyModal()">
+    <div class="modal-card" onclick="event.stopPropagation()" style="max-width: 400px; padding: 2rem;">
+      <div class="modal-header"
+        style="border: none; padding-bottom: 0; display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <h2 style="font-size: 1.35rem; font-weight: 800; color: var(--text-primary);">Quick Invest</h2>
+          <span id="quickBuyFundName" style="color: var(--accent-green); font-size: 0.85rem; font-weight: 600;">Fund
+            Name</span>
+        </div>
+        <button class="modal-close" onclick="closeQuickBuyModal()"
+          style="border: none; background: transparent; font-size: 1.2rem; cursor: pointer; color: var(--text-secondary);">&#x2715;</button>
+      </div>
+
+      <div style="margin-top: 1.5rem; display: flex; flex-direction: column; gap: 1rem;">
+        <div
+          style="display: flex; justify-content: space-between; font-size: 0.85rem; border-bottom: 1px solid var(--border); padding-bottom: 8px;">
+          <span style="color: var(--text-secondary);">Current NAV:</span>
+          <span id="quickBuyNAV" style="font-weight: 700; color: var(--text-primary);">₹0.00</span>
+        </div>
+
+        <div class="filter-group">
+          <label>Quantity / Units to Buy</label>
+          <input type="number" id="quickBuyQty" class="filter-select" value="10" min="1"
+            style="width: 100%; -webkit-appearance: none; appearance: none; background-image: none;"
+            oninput="updateQuickBuyTotal()" />
+        </div>
+
+        <div
+          style="display: flex; justify-content: space-between; font-size: 0.9rem; font-weight: 700; background: var(--input-bg); padding: 12px; border-radius: var(--radius-sm);">
+          <span style="color: var(--text-secondary);">Total Investment:</span>
+          <span id="quickBuyTotal" style="color: var(--accent-green);">₹0.00</span>
+        </div>
+
+        <button class="btn-primary" style="width: 100%; padding: 0.8rem; margin-top: 0.5rem;"
+          onclick="submitQuickBuy()">Confirm Purchase</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js?v=1.0.2" defer></script>
+</body>
+
+</html>
