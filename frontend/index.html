@@ -55,7 +55,7 @@
           <!-- Stock Search Button & Input -->
           <div class="search-container" style="position: relative;">
             <input type="text" id="stockSearchInput" placeholder="Search funds..." class="port-input" style="padding: 6px 12px 6px 30px; font-size: 0.8rem; width: 160px; transition: width 0.3s; border-radius: 20px;" onfocus="this.style.width='220px'; document.getElementById('searchDropdown').style.display='block';" onblur="setTimeout(() => { this.style.width='160px'; document.getElementById('searchDropdown').style.display='none'; }, 200)" />
-            <span style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-size: 0.85rem; color: var(--text-muted);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg></span>
+            <span style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-size: 0.85rem; color: var(--text-muted); pointer-events: none;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg></span>
             <div id="searchDropdown" class="search-dropdown" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-sm); z-index: 100; max-height: 200px; overflow-y: auto; box-shadow: var(--shadow-md); margin-top: 5px;"></div>
           </div>
 
@@ -485,6 +485,9 @@
       <div class="modal-ai-section">
         <h3>AI Analysis</h3>
         <p id="modalAIText"></p>
+      </div>
+      <div style="margin-top: 1.5rem; display: flex;">
+        <button class="btn-primary" id="modalBuyBtn" style="flex: 1; padding: 12px; font-weight: 700; font-size: 0.95rem; border-radius: var(--radius-sm);">Invest Now</button>
       </div>
     </div>
   </div>

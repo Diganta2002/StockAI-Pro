@@ -865,6 +865,14 @@ function openStockModal(sym) {
   series[series.length - 1] = d.price;
   setTimeout(() => drawLineChart(canvas, series, d.change >= 0), 50);
 
+  const buyBtn = document.getElementById('modalBuyBtn');
+  if (buyBtn) {
+    buyBtn.onclick = () => {
+      closeStockModal();
+      openQuickBuyModal(sym);
+    };
+  }
+
   document.getElementById('stockModal').classList.add('active');
   document.body.style.overflow = 'hidden';
 }
@@ -1784,7 +1792,7 @@ function handleStockSearch(query) {
   }
   
   dropdown.innerHTML = matches.map(([sym, d]) => `
-    <div class="search-dropdown-item" onclick="openStockModal('${sym}')" style="padding: 8px 12px; cursor: pointer; font-size: 0.8rem; border-bottom: 1px solid var(--border);">
+    <div class="search-dropdown-item" onmousedown="openStockModal('${sym}')" style="padding: 8px 12px; cursor: pointer; font-size: 0.8rem; border-bottom: 1px solid var(--border);">
       <strong style="color: var(--accent-green);">${sym}</strong> - <span style="font-size: 0.75rem; color: var(--text-secondary);">${d.name}</span>
     </div>
   `).join('');
