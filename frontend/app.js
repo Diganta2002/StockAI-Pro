@@ -1790,3 +1790,55 @@ function handleStockSearch(query) {
   `).join('');
   dropdown.style.display = 'block';
 }
+
+// ================================================================
+// PROFILE MODAL
+// ================================================================
+function openProfileModal() {
+  const userStr = localStorage.getItem('auth_user');
+  let user = { name: '', email: '' };
+  try {
+    user = JSON.parse(userStr || '{}');
+  } catch(e){}
+
+  const nameInput = document.getElementById('profileNameInput');
+  const emailInput = document.getElementById('profileEmailInput');
+  if (nameInput) nameInput.value = user.name || '';
+  if (emailInput) emailInput.value = user.email || '';
+
+  const modal = document.getElementById('profileModal');
+  if (modal) modal.classList.add('active');
+}
+
+function closeProfileModal() {
+  const modal = document.getElementById('profileModal');
+  if (modal) modal.classList.remove('active');
+}
+
+function saveProfile() {
+  const nameInput = document.getElementById('profileNameInput');
+  const emailInput = document.getElementById('profileEmailInput');
+  const newName = nameInput ? nameInput.value.trim() : '';
+  const newEmail = emailInput ? emailInput.value.trim() : '';
+  
+  if (!newName) {
+    alert('Name is required!');
+    return;
+  }
+
+  const userStr = localStorage.getItem('auth_user');
+  let user = {};
+  try {
+    user = JSON.parse(userStr || '{}');
+  } catch(e){}
+
+  user.name = newName;
+  user.email = newEmail;
+  localStorage.setItem('auth_user', JSON.stringify(user));
+  
+  closeProfileModal();
+  alert('Profile updated successfully!');
+  
+  // Re-run the auth check to update UI widgets
+  checkAuth();
+}
